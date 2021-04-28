@@ -1,4 +1,4 @@
-# vn.py框架的CTP底层接口
+# vn.py框架的CTP穿透式测试底层接口
 
 <p align="center">
   <img src ="https://vnpy.oss-cn-shanghai.aliyuncs.com/vnpy-logo.png"/>
@@ -13,7 +13,7 @@
 
 ## 说明
 
-基于CTP期货版的6.5.1接口封装开发，接口中自带的是【穿透式实盘环境】的dll文件。
+基于CTP期货版的6.5.1接口封装开发，接口中自带的是【穿透式测试环境】的dll文件。
 
 ## 安装
 
