@@ -134,9 +134,9 @@ CHINA_TZ = pytz.timezone("Asia/Shanghai")       # 中国时区
 symbol_contract_map: Dict[str, ContractData] = {}
 
 
-class CtpGateway(BaseGateway):
+class CtptestGateway(BaseGateway):
     """
-    vn.py用于对接期货CTP柜台的交易接口。
+    vn.py用于对接期货CTP柜台穿透式测试环境的交易接口。
     """
 
     default_setting: Dict[str, str] = {
@@ -151,12 +151,12 @@ class CtpGateway(BaseGateway):
 
     exchanges: List[str] = list(EXCHANGE_CTP2VT.values())
 
-    def __init__(self, event_engine: EventEngine, gateway_name: str = "CTP") -> None:
+    def __init__(self, event_engine: EventEngine, gateway_name: str = "CTPTEST") -> None:
         """构造函数"""
         super().__init__(event_engine, gateway_name)
 
-        self.td_api: "CtpTdApi" = CtpTdApi(self)
-        self.md_api: "CtpMdApi" = CtpMdApi(self)
+        self.td_api: "CtptestTdApi" = CtptestTdApi(self)
+        self.md_api: "CtptestMdApi" = CtptestMdApi(self)
 
     def connect(self, setting: dict) -> None:
         """连接交易接口"""
@@ -243,14 +243,14 @@ class CtpGateway(BaseGateway):
         self.event_engine.register(EVENT_TIMER, self.process_timer_event)
 
 
-class CtpMdApi(MdApi):
+class CtptestMdApi(MdApi):
     """"""
 
-    def __init__(self, gateway: CtpGateway) -> None:
+    def __init__(self, gateway: CtptestGateway) -> None:
         """构造函数"""
         super().__init__()
 
-        self.gateway: CtpGateway = gateway
+        self.gateway: CtptestGateway = gateway
         self.gateway_name: str = gateway.gateway_name
 
         self.reqid: int = 0
@@ -399,14 +399,14 @@ class CtpMdApi(MdApi):
         self.current_date = datetime.now().strftime("%Y%m%d")
 
 
-class CtpTdApi(TdApi):
+class CtptestTdApi(TdApi):
     """"""
 
-    def __init__(self, gateway) -> None:
+    def __init__(self, gateway: CtptestGateway) -> None:
         """构造函数"""
-        super(CtpTdApi, self).__init__()
+        super().__init__()
 
-        self.gateway: CtpGateway = gateway
+        self.gateway: CtptestGateway = gateway
         self.gateway_name: str = gateway.gateway_name
 
         self.reqid: int = 0
@@ -525,7 +525,7 @@ class CtpTdApi(TdApi):
         symbol: str = data["InstrumentID"]
         contract: ContractData = symbol_contract_map.get(symbol, None)
 
-        if not contract:
+        if contract:
             # 获取之前缓存的持仓数据缓存
             key: str = f"{data['InstrumentID'], data['PosiDirection']}"
             position: PositionData = self.positions.get(key, None)
