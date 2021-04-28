@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 try:
-    from .gateway import CtpGateway
+    from .gateway import CtpGateway as CtptestGateway
 except ImportError:
     pass
 

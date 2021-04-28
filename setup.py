@@ -23,15 +23,15 @@ def get_ext_modules() -> list:
     runtime_library_dirs = ["$ORIGIN"]
 
     vnctpmd = Extension(
-        "vnpy_ctp.api.vnctpmd",
+        "vnpy_ctptest.api.vnctpmd",
         [
-            "vnpy_ctp/api/vnctp/vnctpmd/vnctpmd.cpp",
+            "vnpy_ctptest/api/vnctp/vnctpmd/vnctpmd.cpp",
         ],
-        include_dirs=["vnpy_ctp/api/include",
-                      "vnpy_ctp/api/vnctp"],
+        include_dirs=["vnpy_ctptest/api/include",
+                      "vnpy_ctptest/api/vnctp"],
         define_macros=[],
         undef_macros=[],
-        library_dirs=["vnpy_ctp/api/libs", "vnpy_ctp/api"],
+        library_dirs=["vnpy_ctptest/api/libs", "vnpy_ctptest/api"],
         libraries=["thostmduserapi_se", "thosttraderapi_se"],
         extra_compile_args=compiler_flags,
         extra_link_args=extra_link_args,
@@ -41,15 +41,15 @@ def get_ext_modules() -> list:
     )
 
     vnctptd = Extension(
-        "vnpy_ctp.api.vnctptd",
+        "vnpy_ctptest.api.vnctptd",
         [
-            "vnpy_ctp/api/vnctp/vnctptd/vnctptd.cpp",
+            "vnpy_ctptest/api/vnctp/vnctptd/vnctptd.cpp",
         ],
-        include_dirs=["vnpy_ctp/api/include",
-                      "vnpy_ctp/api/vnctp"],
+        include_dirs=["vnpy_ctptest/api/include",
+                      "vnpy_ctptest/api/vnctp"],
         define_macros=[],
         undef_macros=[],
-        library_dirs=["vnpy_ctp/api/libs", "vnpy_ctp/api"],
+        library_dirs=["vnpy_ctptest/api/libs", "vnpy_ctptest/api"],
         libraries=["thostmduserapi_se", "thosttraderapi_se"],
         extra_compile_args=compiler_flags,
         extra_link_args=extra_link_args,
