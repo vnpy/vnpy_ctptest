@@ -22,7 +22,7 @@
 直接使用pip命令：
 
 ```
-pip install vnpy_ctp
+pip install vnpy_ctptest
 ```
 
 下载解压后在cmd中运行
