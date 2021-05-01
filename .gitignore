@@ -27,6 +27,9 @@
 
 # Python
 *.pyc
+dist/
+build/
+vnpy_ctptest.egg-info/
 
 # Visual Studio
 .vs/
