@@ -530,7 +530,7 @@ class CtptestTdApi(TdApi):
             key: str = f"{data['InstrumentID'], data['PosiDirection']}"
             position: PositionData = self.positions.get(key, None)
             if not position:
-                position = PositionData(
+                position: PositionData = PositionData(
                     symbol=data["InstrumentID"],
                     exchange=contract.exchange,
                     direction=DIRECTION_CTP2VT[data["PosiDirection"]],
@@ -650,7 +650,7 @@ class CtptestTdApi(TdApi):
         dt: datetime = datetime.strptime(timestamp, "%Y%m%d %H:%M:%S")
         dt = CHINA_TZ.localize(dt)
 
-        order = OrderData(
+        order: OrderData = OrderData(
             symbol=symbol,
             exchange=contract.exchange,
             orderid=orderid,
@@ -683,7 +683,7 @@ class CtptestTdApi(TdApi):
         dt: datetime = datetime.strptime(timestamp, "%Y%m%d %H:%M:%S")
         dt = CHINA_TZ.localize(dt)
 
-        trade = TradeData(
+        trade: TradeData = TradeData(
             symbol=symbol,
             exchange=contract.exchange,
             orderid=orderid,
