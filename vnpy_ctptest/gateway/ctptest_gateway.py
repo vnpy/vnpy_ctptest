@@ -4,7 +4,7 @@ import pytz
 from datetime import datetime
 from time import sleep
 from vnpy.event.engine import EventEngine
-from typing import Dict, List
+from typing import Dict, List, Set
 
 from vnpy.trader.constant import (
     Direction,
@@ -257,7 +257,7 @@ class CtptestMdApi(MdApi):
 
         self.connect_status: bool = False
         self.login_status: bool = False
-        self.subscribed: List[str] = set()
+        self.subscribed: Set(str) = set()
 
         self.userid: str = ""
         self.password: str = ""
