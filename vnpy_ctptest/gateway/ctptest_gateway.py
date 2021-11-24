@@ -318,7 +318,7 @@ class CtptestMdApi(MdApi):
 
         timestamp: str = f"{date_str} {data['UpdateTime']}.{int(data['UpdateMillisec']/100)}"
         dt: datetime = datetime.strptime(timestamp, "%Y%m%d %H:%M:%S.%f")
-        dt = CHINA_TZ.localize(dt)
+        dt: datetime = CHINA_TZ.localize(dt)
 
         tick: TickData = TickData(
             symbol=symbol,
@@ -656,7 +656,7 @@ class CtptestTdApi(TdApi):
 
         timestamp: str = f"{data['InsertDate']} {data['InsertTime']}"
         dt: datetime = datetime.strptime(timestamp, "%Y%m%d %H:%M:%S")
-        dt = CHINA_TZ.localize(dt)
+        dt: datetime = CHINA_TZ.localize(dt)
 
         tp = (data["OrderPriceType"], data["TimeCondition"], data["VolumeCondition"])
 
@@ -691,7 +691,7 @@ class CtptestTdApi(TdApi):
 
         timestamp: str = f"{data['TradeDate']} {data['TradeTime']}"
         dt: datetime = datetime.strptime(timestamp, "%Y%m%d %H:%M:%S")
-        dt = CHINA_TZ.localize(dt)
+        dt: datetime = CHINA_TZ.localize(dt)
 
         trade: TradeData = TradeData(
             symbol=symbol,
@@ -804,8 +804,6 @@ class CtptestTdApi(TdApi):
             "ContingentCondition": THOST_FTDC_CC_Immediately,
             "ForceCloseReason": THOST_FTDC_FCC_NotForceClose,
             "IsAutoSuspend": 0,
-            "TimeCondition": THOST_FTDC_TC_GFD,
-            "VolumeCondition": THOST_FTDC_VC_AV,
             "TimeCondition": time_condition,
             "VolumeCondition": volume_condition,
             "MinVolume": 1
