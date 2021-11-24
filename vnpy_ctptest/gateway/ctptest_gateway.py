@@ -4,7 +4,7 @@ import pytz
 from datetime import datetime
 from time import sleep
 from vnpy.event.engine import EventEngine
-from typing import Dict, List
+from typing import Dict, List, Set, Tuple
 
 from vnpy.trader.constant import (
     Direction,
@@ -88,11 +88,13 @@ DIRECTION_CTP2VT[THOST_FTDC_PD_Long] = Direction.LONG
 DIRECTION_CTP2VT[THOST_FTDC_PD_Short] = Direction.SHORT
 
 # 委托类型映射
-ORDERTYPE_VT2CTP: Dict[OrderType, str] = {
-    OrderType.LIMIT: THOST_FTDC_OPT_LimitPrice,
-    OrderType.MARKET: THOST_FTDC_OPT_AnyPrice
+ORDERTYPE_VT2CTP: Dict[OrderType, Tuple] = {
+    OrderType.LIMIT: (THOST_FTDC_OPT_LimitPrice, THOST_FTDC_TC_GFD, THOST_FTDC_VC_AV),
+    OrderType.MARKET: (THOST_FTDC_OPT_AnyPrice, THOST_FTDC_TC_GFD, THOST_FTDC_VC_AV),
+    OrderType.FAK: (THOST_FTDC_OPT_LimitPrice, THOST_FTDC_TC_IOC, THOST_FTDC_VC_AV),
+    OrderType.FOK: (THOST_FTDC_OPT_LimitPrice, THOST_FTDC_TC_IOC, THOST_FTDC_VC_CV),
 }
-ORDERTYPE_CTP2VT: Dict[str, OrderType] = {v: k for k, v in ORDERTYPE_VT2CTP.items()}
+ORDERTYPE_CTP2VT: Dict[Tuple, OrderType] = {v: k for k, v in ORDERTYPE_VT2CTP.items()}
 
 # 开平方向映射
 OFFSET_VT2CTP: Dict[Offset, str] = {
@@ -257,7 +259,7 @@ class CtptestMdApi(MdApi):
 
         self.connect_status: bool = False
         self.login_status: bool = False
-        self.subscribed: List[str] = set()
+        self.subscribed: Set = set()
 
         self.userid: str = ""
         self.password: str = ""
@@ -308,9 +310,15 @@ class CtptestMdApi(MdApi):
         if not contract:
             return
 
-        timestamp: str = f"{self.current_date} {data['UpdateTime']}.{int(data['UpdateMillisec']/100)}"
+        # 对大商所的交易日字段取本地日期
+        if contract.exchange == Exchange.DCE:
+            date_str: str = self.current_date
+        else:
+            date_str: str = data["ActionDay"]
+
+        timestamp: str = f"{date_str} {data['UpdateTime']}.{int(data['UpdateMillisec']/100)}"
         dt: datetime = datetime.strptime(timestamp, "%Y%m%d %H:%M:%S.%f")
-        dt = CHINA_TZ.localize(dt)
+        dt: datetime = CHINA_TZ.localize(dt)
 
         tick: TickData = TickData(
             symbol=symbol,
@@ -318,6 +326,7 @@ class CtptestMdApi(MdApi):
             datetime=dt,
             name=contract.name,
             volume=data["Volume"],
+            turnover=data["Turnover"],
             open_interest=data["OpenInterest"],
             last_price=adjust_price(data["LastPrice"]),
             limit_up=data["UpperLimitPrice"],
@@ -530,7 +539,7 @@ class CtptestTdApi(TdApi):
             key: str = f"{data['InstrumentID'], data['PosiDirection']}"
             position: PositionData = self.positions.get(key, None)
             if not position:
-                position = PositionData(
+                position: PositionData = PositionData(
                     symbol=data["InstrumentID"],
                     exchange=contract.exchange,
                     direction=DIRECTION_CTP2VT[data["PosiDirection"]],
@@ -648,13 +657,15 @@ class CtptestTdApi(TdApi):
 
         timestamp: str = f"{data['InsertDate']} {data['InsertTime']}"
         dt: datetime = datetime.strptime(timestamp, "%Y%m%d %H:%M:%S")
-        dt = CHINA_TZ.localize(dt)
+        dt: datetime = CHINA_TZ.localize(dt)
 
-        order = OrderData(
+        tp = (data["OrderPriceType"], data["TimeCondition"], data["VolumeCondition"])
+
+        order: OrderData = OrderData(
             symbol=symbol,
             exchange=contract.exchange,
             orderid=orderid,
-            type=ORDERTYPE_CTP2VT[data["OrderPriceType"]],
+            type=ORDERTYPE_CTP2VT[tp],
             direction=DIRECTION_CTP2VT[data["Direction"]],
             offset=OFFSET_CTP2VT[data["CombOffsetFlag"]],
             price=data["LimitPrice"],
@@ -681,9 +692,9 @@ class CtptestTdApi(TdApi):
 
         timestamp: str = f"{data['TradeDate']} {data['TradeTime']}"
         dt: datetime = datetime.strptime(timestamp, "%Y%m%d %H:%M:%S")
-        dt = CHINA_TZ.localize(dt)
+        dt: datetime = CHINA_TZ.localize(dt)
 
-        trade = TradeData(
+        trade: TradeData = TradeData(
             symbol=symbol,
             exchange=contract.exchange,
             orderid=orderid,
@@ -775,12 +786,15 @@ class CtptestTdApi(TdApi):
 
         self.order_ref += 1
 
+        tp = ORDERTYPE_VT2CTP[req.type]
+        price_type, time_condition, volume_condition = tp
+
         ctp_req: dict = {
             "InstrumentID": req.symbol,
             "ExchangeID": req.exchange.value,
             "LimitPrice": req.price,
             "VolumeTotalOriginal": int(req.volume),
-            "OrderPriceType": ORDERTYPE_VT2CTP.get(req.type, ""),
+            "OrderPriceType": price_type,
             "Direction": DIRECTION_VT2CTP.get(req.direction, ""),
             "CombOffsetFlag": OFFSET_VT2CTP.get(req.offset, ""),
             "OrderRef": str(self.order_ref),
@@ -791,19 +805,10 @@ class CtptestTdApi(TdApi):
             "ContingentCondition": THOST_FTDC_CC_Immediately,
             "ForceCloseReason": THOST_FTDC_FCC_NotForceClose,
             "IsAutoSuspend": 0,
-            "TimeCondition": THOST_FTDC_TC_GFD,
-            "VolumeCondition": THOST_FTDC_VC_AV,
+            "TimeCondition": time_condition,
+            "VolumeCondition": volume_condition,
             "MinVolume": 1
         }
-
-        if req.type == OrderType.FAK:
-            ctp_req["OrderPriceType"] = THOST_FTDC_OPT_LimitPrice
-            ctp_req["TimeCondition"] = THOST_FTDC_TC_IOC
-            ctp_req["VolumeCondition"] = THOST_FTDC_VC_AV
-        elif req.type == OrderType.FOK:
-            ctp_req["OrderPriceType"] = THOST_FTDC_OPT_LimitPrice
-            ctp_req["TimeCondition"] = THOST_FTDC_TC_IOC
-            ctp_req["VolumeCondition"] = THOST_FTDC_VC_CV
 
         self.reqid += 1
         self.reqOrderInsert(ctp_req, self.reqid)
