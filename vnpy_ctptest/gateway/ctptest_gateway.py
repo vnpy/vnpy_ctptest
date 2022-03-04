@@ -138,7 +138,7 @@ symbol_contract_map: Dict[str, ContractData] = {}
 
 class CtptestGateway(BaseGateway):
     """
-    vn.py用于对接期货CTP柜台穿透式测试环境的交易接口。
+    VeighNa用于对接期货CTP柜台穿透式测试环境的交易接口。
     """
 
     default_name: str = "CTPTEST"
