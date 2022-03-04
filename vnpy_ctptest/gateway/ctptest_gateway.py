@@ -138,8 +138,10 @@ symbol_contract_map: Dict[str, ContractData] = {}
 
 class CtptestGateway(BaseGateway):
     """
-    vn.py用于对接期货CTP柜台穿透式测试环境的交易接口。
+    VeighNa用于对接期货CTP柜台穿透式测试环境的交易接口。
     """
+
+    default_name: str = "CTPTEST"
 
     default_setting: Dict[str, str] = {
         "用户名": "",
@@ -153,7 +155,7 @@ class CtptestGateway(BaseGateway):
 
     exchanges: List[str] = list(EXCHANGE_CTP2VT.values())
 
-    def __init__(self, event_engine: EventEngine, gateway_name: str = "CTPTEST") -> None:
+    def __init__(self, event_engine: EventEngine, gateway_name: str) -> None:
         """构造函数"""
         super().__init__(event_engine, gateway_name)
 
