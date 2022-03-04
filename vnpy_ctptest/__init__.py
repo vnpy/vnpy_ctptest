@@ -20,12 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-try:
-    from .gateway import CtptestGateway
-except ImportError:
-    pass
-
 import importlib_metadata
+
+from .gateway import CtptestGateway
 
 
 __version__ = importlib_metadata.version("vnpy_ctptest")
