@@ -224,7 +224,7 @@ class CtptestGateway(BaseGateway):
         """输出错误信息日志"""
         error_id: int = error["ErrorID"]
         error_msg: str = error["ErrorMsg"]
-        msg = f"{msg}，代码：{error_id}，信息：{error_msg}"
+        msg: str = f"{msg}，代码：{error_id}，信息：{error_msg}"
         self.write_log(msg)
 
     def process_timer_event(self, event) -> None:
@@ -661,7 +661,7 @@ class CtptestTdApi(TdApi):
         dt: datetime = datetime.strptime(timestamp, "%Y%m%d %H:%M:%S")
         dt: datetime = CHINA_TZ.localize(dt)
 
-        tp = (data["OrderPriceType"], data["TimeCondition"], data["VolumeCondition"])
+        tp: tuple = (data["OrderPriceType"], data["TimeCondition"], data["VolumeCondition"])
 
         order: OrderData = OrderData(
             symbol=symbol,
@@ -788,7 +788,7 @@ class CtptestTdApi(TdApi):
 
         self.order_ref += 1
 
-        tp = ORDERTYPE_VT2CTP[req.type]
+        tp: tuple = ORDERTYPE_VT2CTP[req.type]
         price_type, time_condition, volume_condition = tp
 
         ctp_req: dict = {
