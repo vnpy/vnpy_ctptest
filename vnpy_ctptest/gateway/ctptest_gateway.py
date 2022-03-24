@@ -4,7 +4,7 @@ import pytz
 from datetime import datetime
 from time import sleep
 from vnpy.event.engine import EventEngine
-from typing import Dict, List, Set, Tuple
+from typing import Dict, List, Tuple
 
 from vnpy.trader.constant import (
     Direction,
