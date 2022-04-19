@@ -541,7 +541,7 @@ class CtptestTdApi(TdApi):
             key: str = f"{data['InstrumentID'], data['PosiDirection']}"
             position: PositionData = self.positions.get(key, None)
             if not position:
-                position: PositionData = PositionData(
+                position = PositionData(
                     symbol=data["InstrumentID"],
                     exchange=contract.exchange,
                     direction=DIRECTION_CTP2VT[data["PosiDirection"]],
