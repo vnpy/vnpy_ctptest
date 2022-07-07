@@ -185,7 +185,13 @@ public:
 
 	string getTradingDay();
 
+	string getApiVersion();
+
 	void registerFront(string pszFrontAddress);
+
+	void registerNameServer(string pszNsAddress);
+
+	void registerFensUserInfo(const dict &req);
 
 	int subscribeMarketData(string instrumentID);
 
