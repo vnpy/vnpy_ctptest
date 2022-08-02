@@ -5637,4 +5637,3 @@ CThostFtdcSyncDeltaEWarrantOffsetField = {
     "ActionDirection": "char",
     "SyncDeltaSequenceNo": "int",
 }
-

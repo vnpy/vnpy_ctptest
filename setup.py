@@ -18,7 +18,7 @@ def get_ext_modules() -> list:
         ]
         extra_link_args = ["-lstdc++"]
         runtime_library_dirs = ["$ORIGIN"]
-    
+
     elif platform.system() == "Windows":
         extra_compile_flags = ["-O2", "-MT"]
         extra_link_args = []
