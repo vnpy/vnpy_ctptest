@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-    <img src ="https://img.shields.io/badge/version-6.6.7.0-blueviolet.svg"/>
+    <img src ="https://img.shields.io/badge/version-6.6.9.0-blueviolet.svg"/>
     <img src ="https://img.shields.io/badge/platform-windows|linux-yellow.svg"/>
     <img src ="https://img.shields.io/badge/python-3.7|3.8|3.9|3.10-blue.svg" />
     <img src ="https://img.shields.io/github/license/vnpy/vnpy.svg?color=orange"/>
@@ -13,11 +13,11 @@
 
 ## 说明
 
-基于CTP期货版的6.6.7接口封装开发，接口中自带的是【穿透式测试环境】的dll文件。
+基于CTP期货版的6.6.9接口封装开发，接口中自带的是【穿透式测试环境】的dll文件。
 
 ## 安装
 
-安装环境推荐基于3.3.0版本以上的【[**VeighNa Studio**](https://www.vnpy.com)】。
+安装环境推荐基于3.7.0版本以上的【[**VeighNa Studio**](https://www.vnpy.com)】。
 
 直接使用pip命令：
 
