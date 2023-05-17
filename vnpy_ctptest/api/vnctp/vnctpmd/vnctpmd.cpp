@@ -357,6 +357,7 @@ void MdApi::processRspUserLogin(Task *task)
 		data["FFEXTime"] = toUtf(task_data->FFEXTime);
 		data["INETime"] = toUtf(task_data->INETime);
 		data["SysVersion"] = toUtf(task_data->SysVersion);
+		data["GFEXTime"] = toUtf(task_data->GFEXTime);
 		delete task_data;
 	}
 	dict error;
@@ -925,6 +926,7 @@ PYBIND11_MODULE(vnctpmd, m)
 		.def("join", &MdApi::join)
 		.def("exit", &MdApi::exit)
 		.def("getTradingDay", &MdApi::getTradingDay)
+		.def("getApiVersion", &MdApi::getApiVersion)
 		.def("registerFront", &MdApi::registerFront)
 		.def("registerNameServer", &MdApi::registerNameServer)
 		.def("registerFensUserInfo", &MdApi::registerFensUserInfo)
