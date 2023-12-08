@@ -5786,4 +5786,3 @@ CThostFtdcPortfTradeParamSettingField = {
     "IsActionVerify": "int",
     "IsCloseVerify": "int",
 }
-
