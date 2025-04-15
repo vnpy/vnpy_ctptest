@@ -129,7 +129,7 @@ python_files = [
   ['vnpy_ctptest/api/__init__.py', 'vnpy_ctptest/api'],
   ['vnpy_ctptest/api/ctp_constant.py', 'vnpy_ctptest/api'],
   ['vnpy_ctptest/gateway/__init__.py', 'vnpy_ctptest/gateway'],
-  ['vnpy_ctptest/gateway/ctp_gateway.py', 'vnpy_ctptest/gateway'],
+  ['vnpy_ctptest/gateway/ctptest_gateway.py', 'vnpy_ctptest/gateway'],
 ]
 
 foreach file : python_files
