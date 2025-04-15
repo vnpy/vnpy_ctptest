@@ -20,9 +20,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import importlib_metadata
+
+from importlib import metadata
 
 from .gateway import CtptestGateway
 
 
-__version__ = importlib_metadata.version("vnpy_ctptest")
+__all__ = ["CtptestGateway"]
+
+
+try:
+    __version__ = metadata.version("vnpy_ctptest")
+except metadata.PackageNotFoundError:
+    __version__ = "dev"
