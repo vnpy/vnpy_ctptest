@@ -158,8 +158,8 @@ class CtptestGateway(BaseGateway):
         """构造函数"""
         super().__init__(event_engine, gateway_name)
 
-        self.td_api: "CtptestTdApi" = CtptestTdApi(self)
-        self.md_api: "CtptestMdApi" = CtptestMdApi(self)
+        self.td_api: CtptestTdApi = CtptestTdApi(self)
+        self.md_api: CtptestMdApi = CtptestMdApi(self)
 
     def connect(self, setting: dict) -> None:
         """连接交易接口"""
