@@ -657,29 +657,46 @@ class CtptestTdApi(TdApi):
         order_ref: str = data["OrderRef"]
         orderid: str = f"{frontid}_{sessionid}_{order_ref}"
 
+        status: Status | None = STATUS_CTP2VT.get(data["OrderStatus"], None)
+        if not status:
+            self.gateway.write_log(f"收到不支持的委托状态，委托号：{orderid}")
+            return
+
         timestamp: str = f"{data['InsertDate']} {data['InsertTime']}"
         dt: datetime = datetime.strptime(timestamp, "%Y%m%d %H:%M:%S")
         dt = dt.replace(tzinfo=CHINA_TZ)
 
         tp: tuple = (data["OrderPriceType"], data["TimeCondition"], data["VolumeCondition"])
+        order_type: OrderType | None = ORDERTYPE_CTP2VT.get(tp, None)
+        if not order_type:
+            self.gateway.write_log(f"收到不支持的委托类型，委托号：{orderid}")
+            return
 
         order: OrderData = OrderData(
             symbol=symbol,
             exchange=contract.exchange,
             orderid=orderid,
-            type=ORDERTYPE_CTP2VT[tp],
+            type=order_type,
             direction=DIRECTION_CTP2VT[data["Direction"]],
             offset=OFFSET_CTP2VT[data["CombOffsetFlag"]],
             price=data["LimitPrice"],
             volume=data["VolumeTotalOriginal"],
             traded=data["VolumeTraded"],
-            status=STATUS_CTP2VT[data["OrderStatus"]],
+            status=status,
             datetime=dt,
             gateway_name=self.gateway_name
         )
         self.gateway.on_order(order)
 
         self.sysid_orderid_map[data["OrderSysID"]] = orderid
+
+        # 特殊情况撤单（非交易时段、资金不足等）的日志输出
+        if (
+            data["OrderStatus"] == THOST_FTDC_OST_Canceled
+            and data["StatusMsg"] != "已撤单"       # 正常撤单
+        ):
+            status_msg: str = data["StatusMsg"]
+            self.gateway.write_log(f"委托 {orderid} 状态更新，{status_msg}")
 
     def onRtnTrade(self, data: dict) -> None:
         """成交数据推送"""
