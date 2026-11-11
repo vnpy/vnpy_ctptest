@@ -34,6 +34,7 @@ from ..api import (
     THOST_FTDC_OAS_Submitted,
     THOST_FTDC_OAS_Accepted,
     THOST_FTDC_OAS_Rejected,
+    THOST_FTDC_OSS_InsertRejected,
     THOST_FTDC_OST_NoTradeQueueing,
     THOST_FTDC_OST_PartTradedQueueing,
     THOST_FTDC_OST_AllTraded,
@@ -657,6 +658,13 @@ class CtptestTdApi(TdApi):
         order_ref: str = data["OrderRef"]
         orderid: str = f"{frontid}_{sessionid}_{order_ref}"
 
+        # OrderStatus alone cannot distinguish an insert rejection from a cancellation.
+        # CancelRejected/ModifyRejected must not reject the underlying live order.
+        if data["OrderSubmitStatus"] == THOST_FTDC_OSS_InsertRejected:
+            status: Status = Status.REJECTED
+        else:
+            status = STATUS_CTP2VT[data["OrderStatus"]]
+
         timestamp: str = f"{data['InsertDate']} {data['InsertTime']}"
         dt: datetime = datetime.strptime(timestamp, "%Y%m%d %H:%M:%S")
         dt = dt.replace(tzinfo=CHINA_TZ)
@@ -673,7 +681,7 @@ class CtptestTdApi(TdApi):
             price=data["LimitPrice"],
             volume=data["VolumeTotalOriginal"],
             traded=data["VolumeTraded"],
-            status=STATUS_CTP2VT[data["OrderStatus"]],
+            status=status,
             datetime=dt,
             gateway_name=self.gateway_name
         )
